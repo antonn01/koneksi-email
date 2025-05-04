@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { email, nama, order_id, tanggal, jam_mulai, jam_akhir, total_biaya } = req.body;
+  const { email, nama, order_id, tanggal, jam_mulai, jam_akhir, total_biaya, lapangan_number, status_transaksi } = req.body;
 
   if (!email || !nama || !order_id) {
     return res.status(400).json({ message: 'email, nama, dan order_id wajib diisi' });
@@ -25,18 +25,45 @@ export default async function handler(req, res) {
       to: email,
       subject: `Invoice Pemesanan Lapangan - ${order_id}`,
       html: `
-        <h2>Invoice Pemesanan Lapangan</h2>
-        <p>Halo ${nama},</p>
-        <p>Berikut detail pemesanan Anda:</p>
-        <ul>
-          <li><strong>Order ID:</strong> ${order_id}</li>
-          <li><strong>Tanggal:</strong> ${tanggal}</li>
-          <li><strong>Jam:</strong> ${jam_mulai} - ${jam_akhir}</li>
-          <li><strong>Total Biaya:</strong> Rp ${total_biaya}</li>
-        </ul>
-        <p>Terima kasih atas pemesanan Anda.</p>
-        <p><em>Booking Lapangan App</em></p>
-      `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+    <div style="text-align: center;">
+      <h2 style="color: #4DA1FF;">Invoice Pemesanan Lapangan</h2>
+      <p style="font-size: 16px;">Halo <strong>${nama}</strong>,</p>
+    </div>
+    <p style="font-size: 15px;">Terima kasih telah melakukan pemesanan. Berikut adalah detail transaksi Anda:</p>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+      <tr style="background-color: #f2f2f2;">
+        <td style="padding: 10px;"><strong>Order ID</strong></td>
+        <td style="padding: 10px;">${order_id}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px;"><strong>Tanggal</strong></td>
+        <td style="padding: 10px;">${tanggal}</td>
+      </tr>
+      <tr style="background-color: #f2f2f2;">
+        <td style="padding: 10px;"><strong>Jam</strong></td>
+        <td style="padding: 10px;">${jam_mulai} - ${jam_akhir}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px;"><strong>Lapangan</strong></td>
+        <td style="padding: 10px;">Nomor ${lapangan_number}</td>
+      </tr>
+      <tr style="background-color: #f2f2f2;">
+        <td style="padding: 10px;"><strong>Total Biaya</strong></td>
+        <td style="padding: 10px;">Rp ${total_biaya.toLocaleString('id-ID')}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px;"><strong>Status</strong></td>
+        <td style="padding: 10px;">${status_transaksi}</td>
+      </tr>
+    </table>
+    <div style="margin-top: 30px; text-align: center;">
+      <p style="font-size: 14px; color: #777;">Jika ada pertanyaan, silakan hubungi kami melalui aplikasi atau email.</p>
+      <p style="font-size: 14px;"><em>Salam,</em><br><strong>Booking Lapangan App</strong></p>
+    </div>
+  </div>
+`
+
     };
 
     await transporter.sendMail(mailOptions);
